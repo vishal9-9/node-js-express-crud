@@ -11,32 +11,24 @@ const data = [
 ]
 
 app.get("/", (req, res) => {
-    res.send("Hello World!");
+    return res.send("Hello World!");
 });
 
 app.get(`/api/users/:id`, (req, res) => {
     const toReturn = data.find(item => item.id === parseInt(req?.params?.id))
-    if (!toReturn) res.status(404).send("No data with that Id")
-    res.send(toReturn)
+    if (!toReturn) return res.status(404).send("No data with that Id")
+    return res.send(toReturn)
 });
 
 app.get(`/api/users`, (req, res) => {
-    res.send(data)
+    return res.send(data)
 })
 
 app.post(`/api/users`, (req, res) => {
-
-    const schema = Joi.object({
-        name: Joi.string().min(3).required()
-    })
-
-    const result = schema.validate(req?.body)
-
-    if (result?.error){
-        res.status(400).send({error: result?.error?.details[0]?.message})
-        return
+    const {error} = validateUserBody(req?.body)
+    if (error){
+        return res.status(400).send({error: error?.details[0]?.message})
     }
-
     const user = {
         "id": data?.length + 1,
         "name": req?.body?.name
@@ -45,9 +37,35 @@ app.post(`/api/users`, (req, res) => {
     res.status(201).send(user)
 })
 
+app.put(`/api/users/:id`, (req, res) => {
+    const {error} = validateUserBody(req?.body)
+    if (error){
+        return res.status(400).send({error: error?.details[0]?.message})
+    }
+    const toReturn = data.find(item => item.id === parseInt(req?.params?.id))
+    if (!toReturn) return res.status(404).send("No data with that Id")
+    toReturn.name = req?.body?.name
+    return res.send(toReturn)
+})
+
+app.delete(`/api/users/:id`, (req, res) => {
+    const toReturn = data.find(item => item.id === parseInt(req?.params?.id))
+    if (!toReturn) return res.status(404).send("No data with that Id")
+    data.splice(data.indexOf(toReturn), 1)
+    return res.send(data)
+})
+
 app.get(`/api/:name/:id`, (req, res) => {
     res.send(`Hello ${req.params.name} your id is ${req.params.id} and query params are ${req.query}!`)
 });
 
 
-app.listen(3000, () => console.log("listening on 3000..."))
+function validateUserBody(userObject){
+    const schema = Joi.object({
+        name: Joi.string().min(3).required()
+    })
+    return schema.validate(userObject)
+}
+
+
+app.listen(3000, () => console.log("Listening on 3000..."))
