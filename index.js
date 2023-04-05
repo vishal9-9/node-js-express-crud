@@ -7,7 +7,7 @@ app.get("/", (req, res) => {
 });
 
 app.get(`/api/:name/:id`, (req, res) => {
-    res.send(`Hello ${req.params.name} your id is ${req.params.id}!`)
+    res.send(`Hello ${req.params.name} your id is ${req.params.id} and query params are ${req.query}!`)
 });
 
 app.listen(3000, () => console.log("listening on 3000..."))
