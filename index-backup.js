@@ -1,6 +1,6 @@
 var express = require("express");
 var config = require("config");
-var logger = require("./middlewares/logger");
+// var logger = require("./middlewares/logger");
 var authenticate = require("./middlewares/authentication");
 
 var app = express();
@@ -11,7 +11,8 @@ console.log(config.get("password"));
 console.log(config.get("name"));
 
 // middleware work in order that they are called
-app.use(logger);
+
+// app.use(logger);
 
 app.use(authenticate);
 
