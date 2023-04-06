@@ -5,6 +5,8 @@ const app = express();
 
 app.use(express.json());
 
+app.use(express.urlencoded({ extended: true }));
+
 const data = [
   { id: 1, name: "Vishal" },
   { id: 2, name: "Alex" },
@@ -68,4 +70,4 @@ function validateUserBody(userObject) {
   return schema.validate(userObject);
 }
 
-app.listen(3000, () => console.log("Listening on 3000..."));
+app.listen(3001, () => console.log("Listening on 3000..."));
