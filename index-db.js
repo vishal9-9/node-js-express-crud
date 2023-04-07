@@ -28,4 +28,20 @@ const createUser = async () => {
   return result;
 };
 
-console.log(createUser());
+const getUser = async () => {
+  const data = await User.find({ name: "Alex" })
+    // .find({price: {$eq: 10}}) $ne, $gt, $gte, $in, $nin, $lt, $lte
+    // .find({price: {$in: [10, 15, 20]}})
+    // .find({name: /^Alex/i}) starts with alex i for case insensitive
+    // .find({name: /Alex$/i}) ends with alex i for case insensitive
+    // .find({name: /.*Alex.*/i}) contains alex i for case insensitive
+    // .or({price: {$eq: 10}}, {price: {$eq: 15}})
+    // .and({price: {$eq: 10}}, {price: {$eq: 15}})
+    .limit(10) // limit the number of output
+    .sort({ name: 1 }) // sort by name 1 = asc, -1 = desc
+    .select({ name: 1, email: 1 }); // only return name & email
+  console.log(data);
+};
+
+// console.log(createUser());
+getUser();
