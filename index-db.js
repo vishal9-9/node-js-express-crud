@@ -6,9 +6,58 @@ mongoose
   .catch((err) => console.log("error", err));
 
 const userSchema = mongoose.Schema({
-  name: String,
-  email: String,
-  address: String,
+  name: {
+    type: String,
+    required: true,
+    minlength: 3,
+    maxlength: 15,
+    // unique: true,
+    // enum: ["Vishal", "Alex", "Spiderman"],  // value of the field should be inside the array
+    // match: /pattern/,
+  },
+  // author: {
+  //   type: mongoose.Schema.Types.ObjectId,   // For foreign key constraint
+  //   ref: "Author"
+  // },
+  email: {
+    type: String,
+    validate: {
+      isAsync: true,
+      validator: function (v, callback) {
+        setTimeout(() => {
+          const result = v && v.length > 5;
+          callback(result);
+        }, 4000);
+      },
+      message: "Async task executed and result gave error",
+    },
+  },
+  tags: {
+    type: Array,
+    validate: {
+      validator: function (v) {
+        return v && v.length > 0;
+      },
+      message: "Tags length should be greater than 1.",
+    },
+  },
+  address: {
+    type: String,
+    required: function () {
+      if (this?.email?.length > 5) return true;
+      else return false;
+    },
+    lowercase: true,
+    // uppercase: false,
+    trim: true,
+  },
+  price: {
+    type: Number,
+    min: 10,
+    max: 1100,
+    get: (v) => Math.round(v),
+    set: (v) => Math.round(v),
+  },
   DOB: { type: Date },
   created_at: { type: Date, default: Date.now },
   is_active: Boolean,
@@ -33,6 +82,7 @@ const getUser = async () => {
   const pageSize = 10;
 
   const data = await User.find({ name: "Alex" })
+    // .populate('author')  to get the foreign key value
     // .find({price: {$eq: 10}}) $ne, $gt, $gte, $in, $nin, $lt, $lte
     // .find({price: {$in: [10, 15, 20]}})
     // .find({name: /^Alex/i}) starts with alex i for case insensitive
